@@ -10,6 +10,7 @@
 
 ; Script Start - Add your code below here
 #include "engine\Magna.au3"
+#include "engine\backend\default.au3"
 #include "config.au3"
 
 
@@ -18,46 +19,46 @@ Main()
 
 #Region Setup, Update, Render
 Func Setup()
-;~ 	For $i = 1 To 25
-;~ 		; Creating objects
-;~ 		local $it = _Dict()
-;~ 		local $width = Random(10, 40, 1), $height = Random(10, 40, 1)
-;~ 		local $color = $aColors[Random(0, UBound($aColors) - 1, 1)]
-;~ 		$it.Add("name", StringFormat("rect_%d", $i))
-;~ 		$it.Add("type", "rectangle")
-;~ 		$it.Add("x", Random(20, $iWidth - $width, 1))
-;~ 		$it.Add("y", Random(20, $iHeight - $height, 1))
-;~ 		$it.Add("vx", Random(2, 5))
-;~ 		$it.Add("vy", Random(2, 5))
-;~ 		$it.Add("width", $width)
-;~ 		$it.Add("height", $height)
-;~ 		$it.Add("color", $color)
-;~ 		$it.Add("defaultcolor", $color)
-;~ 		$it.Add("active", true)
-;~ 		_M_AddEntity($it)
-;~ 	Next
+	For $i = 1 To 25
+		; Creating objects
+		local $it = _Dict()
+		local $width = Random(10, 40, 1), $height = Random(10, 40, 1)
+		local $color = $aColors[Random(0, UBound($aColors) - 1, 1)]
+		$it.Add("name", StringFormat("rect_%d", $i))
+		$it.Add("type", "rectangle")
+		$it.Add("x", Random(20, $iWidth - $width, 1))
+		$it.Add("y", Random(20, $iHeight - $height, 1))
+		$it.Add("vx", Random(2, 5))
+		$it.Add("vy", Random(2, 5))
+		$it.Add("width", $width)
+		$it.Add("height", $height)
+		$it.Add("color", $color)
+		$it.Add("defaultcolor", $color)
+		$it.Add("active", true)
+		_M_AddEntity($it)
+	Next
 	
-;~ 	For $i = 1 To 50
-;~ 		; Creating objects
-;~ 		local $it = _Dict()
-;~ 		local $width = 20, $height = 20
-;~ 		local $color = $aColors[Random(0, UBound($aColors) - 1, 1)]
-;~ 		$it.Add("name", StringFormat("cube_%d", $i))
-;~ 		$it.Add("type", "cube")
-;~ 		$it.Add("x", Random(20, $iWidth - $width, 1))
-;~ 		$it.Add("y", Random(20, $iHeight - $height, 1))
-;~ 		$it.Add("vx", Random(2, 5))
-;~ 		$it.Add("vy", Random(2, 5))
-;~ 		$it.Add("width", $width)
-;~ 		$it.Add("height", $height)
-;~ 		$it.Add("color", $color)
-;~ 		$it.Add("defaultcolor", $color)
-;~ 		$it.Add("active", true)
-;~ 		_M_AddEntity($it)
-;~ 	Next
+	For $i = 1 To 50
+		; Creating objects
+		local $it = _Dict()
+		local $width = 20, $height = 20
+		local $color = $aColors[Random(0, UBound($aColors) - 1, 1)]
+		$it.Add("name", StringFormat("cube_%d", $i))
+		$it.Add("type", "cube")
+		$it.Add("x", Random(20, $iWidth - $width, 1))
+		$it.Add("y", Random(20, $iHeight - $height, 1))
+		$it.Add("vx", Random(2, 5))
+		$it.Add("vy", Random(2, 5))
+		$it.Add("width", $width)
+		$it.Add("height", $height)
+		$it.Add("color", $color)
+		$it.Add("defaultcolor", $color)
+		$it.Add("active", true)
+		_M_AddEntity($it)
+	Next
 	
-	local $it = _M_NewSprite("hero", ".\assets\char1.jpg", 16, 16)
-	_M_AddEntity($it)
+;~ 	local $it = _M_NewSprite("hero", ".\assets\char1.jpg", 16, 16)
+;~ 	_M_AddEntity($it)
 	
 EndFunc
 
@@ -118,6 +119,7 @@ EndFunc
 
 #Region Main Function
 Func Main()
+	_Magna_Init()
 	GameLoop(60, Setup, Update, Render)
 EndFunc
 #EndRegion Main Function

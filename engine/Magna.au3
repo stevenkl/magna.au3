@@ -2,16 +2,29 @@
 ;Manga.au3 by Steven Kleist (stevenkl) <kleist.steven@gmail.com>
 ;Created with ISN AutoIt Studio v. 1.10
 ;*****************************************
+#Region AutoIt-Includes
 #include <Array.au3>
 #include <Timers.au3>
 #include <WinAPISys.au3>
 #include <GDIPlus.au3>
 #include <GDIPlusConstants.au3>
 
+#EndRegion AutoIt-Includes
+
+
+#Region Vendor-Includes
+#include "vendor\AutoItObject.au3"
+
+#EndRegion Vendor-Includes
+
+
+#Region Magna-Includes
+#include "core\init.au3"
 #include "utils\collision.au3"
 #include "utils\sprite.au3"
 #include "utils\utils.au3"
 
+#EndRegion Magna-Includes
 
 
 
