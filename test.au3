@@ -121,6 +121,9 @@ EndFunc
 #Region Main Function
 Func Main()
 	_Magna_Init()
+	ConsoleWrite(StringFormat("Typeof $magna: %s", VarGetType($magna)) & @CRLF)
+	ConsoleWrite(StringFormat("$magna.name = %s", $magna.name) & @CRLF)
+	exit
 	GameLoop(60, Setup, Update, Render)
 EndFunc
 #EndRegion Main Function

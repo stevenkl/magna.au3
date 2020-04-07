@@ -19,6 +19,7 @@
 
 
 #Region Magna-Includes
+#include "core\magna_class.au3"
 #include "core\init.au3"
 #include "utils\collision.au3"
 #include "utils\sprite.au3"
@@ -37,6 +38,8 @@ Global $aBuffers = _Array()
 
 
 Global $g_MEntities = _Array()
+
+Global $magna
 
 
 
