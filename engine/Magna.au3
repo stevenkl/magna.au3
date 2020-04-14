@@ -19,7 +19,7 @@
 
 
 #Region Magna-Includes
-#include "core\magna_class.au3"
+#include "core\magna.class.au3"
 #include "core\init.au3"
 #include "utils\collision.au3"
 #include "utils\sprite.au3"
