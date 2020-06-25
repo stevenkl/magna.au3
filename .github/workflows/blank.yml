@@ -28,4 +28,4 @@ jobs:
 
     # Runs a set of commands using the runners shell
     - name: Run config.au3
-      run: D:\Host\Apps\AutoIt3\AutoIt.exe $GITHUB_WORKSPACE\config.au3
+      run: D:\Host\Apps\AutoIt3\AutoIt3.exe $GITHUB_WORKSPACE\config.au3
