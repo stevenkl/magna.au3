@@ -1,3 +1,0 @@
-tasks:
-  - init: AutoIt3.exe magna_test.au3
-    command: AutoIt3.exe magna_test.au3
