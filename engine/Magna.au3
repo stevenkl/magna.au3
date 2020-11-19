@@ -150,17 +150,17 @@ Func _M_MainSetup($fUserSetup)
 
     _GDIPlus_Startup()
     $hGraphic = _GDIPlus_GraphicsCreateFromHWND($hGUI)
-    _ArrayAdd($aBitmaps, _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic))
-	_ArrayAdd($aBitmaps, _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic))
+;~     _ArrayAdd($aBitmaps, _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic))
+;~ 	_ArrayAdd($aBitmaps, _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic))
 	
 	$hBitmap = _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic)
 	$hBuffer = _GDIPlus_ImageGetGraphicsContext($hBitmap)
 	
-	for $bitmap in $aBitmaps
-		_ArrayAdd($aBuffers, _GDIPlus_ImageGetGraphicsContext($bitmap))
-	Next
+;~ 	for $bitmap in $aBitmaps
+;~ 		_ArrayAdd($aBuffers, _GDIPlus_ImageGetGraphicsContext($bitmap))
+;~ 	Next
 	
-	$hContext = $aBuffers[$hActiveBuffer]
+	$hContext = $hBuffer
 	
 	$fUserSetup()
 EndFunc

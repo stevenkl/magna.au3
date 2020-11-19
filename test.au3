@@ -29,8 +29,8 @@ Func Setup()
 		$it.Add("type", "rectangle")
 		$it.Add("x", Random(20, $iWidth - $width, 1))
 		$it.Add("y", Random(20, $iHeight - $height, 1))
-		$it.Add("vx", Random(200, 300))
-		$it.Add("vy", Random(200, 300))
+		$it.Add("vx", Random(3, 15))
+		$it.Add("vy", Random(3, 15))
 		$it.Add("width", $width)
 		$it.Add("height", $height)
 		$it.Add("color", $color)
@@ -77,8 +77,8 @@ Func Update($step)
 		EndIf
 		
 		; move
-		$item("x") = ($item("x") + $item("vx") * $step)
-		$item("y") = ($item("y") + $item("vy") * $step)
+		$item("x") = ($item("x") + $item("vx"))
+		$item("y") = ($item("y") + $item("vy"))
 	Next
 	
 EndFunc
@@ -86,21 +86,27 @@ EndFunc
 
 Func Render(ByRef $context)
 	
-	static local $brush = _GDIPlus_BrushCreateSolid()
+;~ 	local $brush = _GDIPlus_BrushCreateSolid()
 	
 	
 	For $item in _M_FindEntitiesByType("cube")
+		local $brush = _GDIPlus_BrushCreateSolid()
 		_GDIPlus_BrushSetSolidColor($brush, $item("color"))
 		_GDIPlus_GraphicsFillRect($context, $item("x"), $item("y"), $item("width"), $item("height"), $brush)
+		_GDIPlus_BrushDispose($brush)
 	Next
 	
 	For $item in _M_FindEntitiesByType("rectangle")
+		local $brush = _GDIPlus_BrushCreateSolid()
 		_GDIPlus_BrushSetSolidColor($brush, $item("color"))
 		_GDIPlus_GraphicsFillRect($context, $item("x"), $item("y"), $item("width"), $item("height"), $brush)
+		_GDIPlus_BrushDispose($brush)
 	Next
 	
 	For $item in _M_FindEntitiesByType("sprite")
+		local $brush = _GDIPlus_BrushCreateSolid()
 		_GDIPlus_GraphicsDrawImage($context, $item("image"), $item("x"), $item("y"))
+		_GDIPlus_BrushDispose($brush)
 	Next
 	
 ;~ 	_GDIPlus_BrushDispose($brush)
