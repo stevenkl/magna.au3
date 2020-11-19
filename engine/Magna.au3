@@ -29,10 +29,11 @@
 
 
 
-;~ Global $MS_PER_UPDATE = 16.666667
+Global $MS_PER_UPDATE = 16.666667
 
-Global $hGUI, $g_hContext, $hContext, $hGraphic, $hBitmap
+Global $hGUI, $g_hContext, $hContext, $hGraphic, $hBitmap, $hBuffer
 Global $hActiveBuffer = 0
+Global $dSwapIntervall = 0.0
 Global $aBitmaps = _Array()
 Global $aBuffers = _Array()
 
@@ -50,7 +51,7 @@ Func GameLoop($FPS, $fSetup, $fUpdate, $fRender)
 	local $accumulator = 0
 	local $ifps =  $FPS
 	local $delta = 1000 / $ifps
-	local $step  = 1 / $ifps
+	local $step  = 1.0 / $ifps
 	local $last, $now, $dt
 	
 	_M_MainSetup($fSetup)
@@ -65,9 +66,7 @@ Func GameLoop($FPS, $fSetup, $fUpdate, $fRender)
 				_M_MainUpdate($step, $fUpdate)
 				$accumulator -= $delta
 			Wend
-			_M_MainRender($fRender)
-;~ 			Sleep(10)
-
+			_M_MainRender($step, $fRender)
 		EndIf
 
 	Wend
@@ -146,13 +145,16 @@ Func _M_MainSetup($fUserSetup)
 	HotKeySet("{ESC}", ProcessInput)
 	
     ; Create GUI
-    $hGUI = GUICreate($sTitle ? $sTitle : "", $iWidth * $iScale, $iHeight * $iScale)
+    $hGUI = GUICreate($sTitle ? $sTitle : "", $iWidth , $iHeight )
     GUISetState(@SW_SHOW)
 
     _GDIPlus_Startup()
     $hGraphic = _GDIPlus_GraphicsCreateFromHWND($hGUI)
     _ArrayAdd($aBitmaps, _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic))
 	_ArrayAdd($aBitmaps, _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic))
+	
+	$hBitmap = _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic)
+	$hBuffer = _GDIPlus_ImageGetGraphicsContext($hBitmap)
 	
 	for $bitmap in $aBitmaps
 		_ArrayAdd($aBuffers, _GDIPlus_ImageGetGraphicsContext($bitmap))
@@ -171,22 +173,30 @@ Func _M_MainUpdate($step, $fUserUpdate)
 EndFunc
 
 
-Func _M_MainRender($fUserRender)
+Func _M_MainRender($step, $fUserRender)
+	
+;~ 	If $hActiveBuffer = 1 Then
+;~ 		$hActiveBuffer = 0
+;~ 	Else 
+;~ 		$hActiveBuffer = 1
+;~ 	EndIf
+	
+	$hContext = $hBuffer
+	
 	_GDIPlus_GraphicsClear($hContext, 0xFFFFFFFF)
 	
 	$fUserRender($hContext)
 	
 	if $DEBUG then
-		_M_DebugRender()
+;~ 		_M_DebugRender()
+;~ 		WinSetTitle($hGUI, "", StringFormat("Current Buffer: %d", $hActiveBuffer))
 	EndIf
 	
-	_GDIPlus_GraphicsDrawImageRect($hGraphic, $aBitmaps[$hActiveBuffer] , 0, 0, $iWidth * $iScale, $iHeight * $iScale)
-	If $hActiveBuffer = 1 Then
-		$hActiveBuffer = 0
-	Else 
-		$hActiveBuffer = 1
-	EndIf
-	$hContext = $aBuffers[$hActiveBuffer]
+	
+	_GDIPlus_GraphicsDrawImageRect($hGraphic, $hBitmap , 0, 0, $iWidth , $iHeight )
+	
+	
+	
 EndFunc
 #EndRegion Main-Setup,Update,Render
 

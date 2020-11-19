@@ -23,14 +23,14 @@ Func Setup()
 	For $i = 1 To 25
 		; Creating objects
 		local $it = _Dict()
-		local $width = Random(10, 40, 1), $height = Random(10, 40, 1)
+		local $width = Random(20, 80, 1), $height = Random(20, 80, 1)
 		local $color = $aColors[Random(0, UBound($aColors) - 1, 1)]
 		$it.Add("name", StringFormat("rect_%d", $i))
 		$it.Add("type", "rectangle")
 		$it.Add("x", Random(20, $iWidth - $width, 1))
 		$it.Add("y", Random(20, $iHeight - $height, 1))
-		$it.Add("vx", Random(2, 5))
-		$it.Add("vy", Random(2, 5))
+		$it.Add("vx", Random(200, 300))
+		$it.Add("vy", Random(200, 300))
 		$it.Add("width", $width)
 		$it.Add("height", $height)
 		$it.Add("color", $color)
@@ -39,24 +39,24 @@ Func Setup()
 		_M_AddEntity($it)
 	Next
 	
-	For $i = 1 To 50
-		; Creating objects
-		local $it = _Dict()
-		local $width = 20, $height = 20
-		local $color = $aColors[Random(0, UBound($aColors) - 1, 1)]
-		$it.Add("name", StringFormat("cube_%d", $i))
-		$it.Add("type", "cube")
-		$it.Add("x", Random(20, $iWidth - $width, 1))
-		$it.Add("y", Random(20, $iHeight - $height, 1))
-		$it.Add("vx", Random(2, 5))
-		$it.Add("vy", Random(2, 5))
-		$it.Add("width", $width)
-		$it.Add("height", $height)
-		$it.Add("color", $color)
-		$it.Add("defaultcolor", $color)
-		$it.Add("active", true)
-		_M_AddEntity($it)
-	Next
+;~ 	For $i = 1 To 50
+;~ 		; Creating objects
+;~ 		local $it = _Dict()
+;~ 		local $width = 20, $height = 20
+;~ 		local $color = $aColors[Random(0, UBound($aColors) - 1, 1)]
+;~ 		$it.Add("name", StringFormat("cube_%d", $i))
+;~ 		$it.Add("type", "cube")
+;~ 		$it.Add("x", Random(20, $iWidth - $width, 1))
+;~ 		$it.Add("y", Random(20, $iHeight - $height, 1))
+;~ 		$it.Add("vx", Random(200, 300))
+;~ 		$it.Add("vy", Random(200, 300))
+;~ 		$it.Add("width", $width)
+;~ 		$it.Add("height", $height)
+;~ 		$it.Add("color", $color)
+;~ 		$it.Add("defaultcolor", $color)
+;~ 		$it.Add("active", true)
+;~ 		_M_AddEntity($it)
+;~ 	Next
 	
 ;~ 	local $it = _M_NewSprite("hero", ".\assets\char1.jpg", 16, 16)
 ;~ 	_M_AddEntity($it)
@@ -65,21 +65,7 @@ EndFunc
 
 
 Func Update($step)
-	
-;~ 	for $i = 0 to UBound($g_MEntities) - 1
-;~ 		for $j = 0 to UBound($g_MEntities) - 1
-;~ 			if $i <> $j then
-;~ 				if _Collide_Rect($g_MEntities[$i], $g_MEntities[$j]) = true then
-;~ 					$g_MEntities[$i]("color") = 0xFF000000
-;~ 					$g_MEntities[$j]("color") = 0xFF000000
-;~ 				Else
-;~ 					$g_MEntities[$i]("color") = $g_MEntities[$i]("defaultcolor")
-;~ 					$g_MEntities[$j]("color") = $g_MEntities[$j]("defaultcolor")
-;~ 				EndIf
-;~ 			EndIf
-;~ 		Next
-;~ 	Next
-	
+		
 	for $item in _M_Entities()
 		
 		; check wall
@@ -91,27 +77,33 @@ Func Update($step)
 		EndIf
 		
 		; move
-		$item("x") = ($item("x") + $item("vx"))
-		$item("y") = ($item("y") + $item("vy"))
+		$item("x") = ($item("x") + $item("vx") * $step)
+		$item("y") = ($item("y") + $item("vy") * $step)
 	Next
+	
 EndFunc
 
 
 Func Render(ByRef $context)
 	
-	local $brush = _GDIPlus_BrushCreateSolid()
+	static local $brush = _GDIPlus_BrushCreateSolid()
 	
-	for $item in _M_Entities()
-		
-		if $item("type") = "sprite" Then
-			_GDIPlus_GraphicsDrawImage($context, $item("image"), $item("x"), $item("y"))
-		Else
-			_GDIPlus_BrushSetSolidColor($brush, $item("color"))
-			_GDIPlus_GraphicsFillRect($context, $item("x"), $item("y"), $item("width"), $item("height"), $brush)
-		EndIf
+	
+	For $item in _M_FindEntitiesByType("cube")
+		_GDIPlus_BrushSetSolidColor($brush, $item("color"))
+		_GDIPlus_GraphicsFillRect($context, $item("x"), $item("y"), $item("width"), $item("height"), $brush)
 	Next
 	
-	_GDIPlus_BrushDispose($brush)
+	For $item in _M_FindEntitiesByType("rectangle")
+		_GDIPlus_BrushSetSolidColor($brush, $item("color"))
+		_GDIPlus_GraphicsFillRect($context, $item("x"), $item("y"), $item("width"), $item("height"), $brush)
+	Next
+	
+	For $item in _M_FindEntitiesByType("sprite")
+		_GDIPlus_GraphicsDrawImage($context, $item("image"), $item("x"), $item("y"))
+	Next
+	
+;~ 	_GDIPlus_BrushDispose($brush)
 	
 EndFunc
 
@@ -120,11 +112,11 @@ EndFunc
 
 #Region Main Function
 Func Main()
-	_Magna_Init()
-	ConsoleWrite(StringFormat("Typeof $magna: %s", VarGetType($magna)) & @CRLF)
-	ConsoleWrite(StringFormat("$magna.name = %s", $magna.name) & @CRLF)
-	exit
-	GameLoop(60, Setup, Update, Render)
+;~ 	_Magna_Init()
+;~ 	ConsoleWrite(StringFormat("Typeof $magna: %s", VarGetType($magna)) & @CRLF)
+;~ 	ConsoleWrite(StringFormat("$magna.name = %s", $magna.name) & @CRLF)
+;~ 	exit
+	GameLoop(30, Setup, Update, Render)
 EndFunc
 #EndRegion Main Function
 
