@@ -9,6 +9,12 @@
 #include <GDIPlus.au3>
 #include <GDIPlusConstants.au3>
 
+#include <GUIConstantsEx.au3>
+#include <WinAPIGdi.au3>
+#include <WinAPIGdiDC.au3>
+#include <WinAPIHObj.au3>
+#include <WindowsConstants.au3>
+
 #EndRegion AutoIt-Includes
 
 
@@ -32,6 +38,7 @@
 Global $MS_PER_UPDATE = 16.666667
 
 Global $hGUI, $g_hContext, $hContext, $hGraphic, $hBitmap, $hBuffer
+Global $hDC, $hDC_Backbuffer, $oDC_Obj, $hGfxCtx
 Global $hActiveBuffer = 0
 Global $dSwapIntervall = 0.0
 Global $aBitmaps = _Array()
@@ -142,6 +149,8 @@ EndFunc
 
 #Region Main-Setup,Update,Render
 Func _M_MainSetup($fUserSetup)
+	AutoItSetOption("GUIOnEventMode", 1)
+	GUISetOnEvent($GUI_EVENT_CLOSE, "_Exit")
 	HotKeySet("{ESC}", ProcessInput)
 	
     ; Create GUI
@@ -149,18 +158,27 @@ Func _M_MainSetup($fUserSetup)
     GUISetState(@SW_SHOW)
 
     _GDIPlus_Startup()
-    $hGraphic = _GDIPlus_GraphicsCreateFromHWND($hGUI)
-;~     _ArrayAdd($aBitmaps, _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic))
-;~ 	_ArrayAdd($aBitmaps, _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic))
 	
-	$hBitmap = _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic)
-	$hBuffer = _GDIPlus_ImageGetGraphicsContext($hBitmap)
+;~     $hGraphic = _GDIPlus_GraphicsCreateFromHWND($hGUI)	
+;~ 	$hBitmap = _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic)
+;~ 	$hBuffer = _GDIPlus_ImageGetGraphicsContext($hBitmap)
+;~ 	$hContext = $hBuffer
 	
-;~ 	for $bitmap in $aBitmaps
-;~ 		_ArrayAdd($aBuffers, _GDIPlus_ImageGetGraphicsContext($bitmap))
-;~ 	Next
 	
-	$hContext = $hBuffer
+	; "C:\Program Files (x86)\AutoIt3\Examples\Helpfile\_WinAPI_BitBlt.au3"
+	Local $hBmp = _GDIPlus_BitmapCreateFromScan0($iWidth, $iHeight)
+	$hBitmap = _GDIPlus_BitmapCreateHBITMAPFromBitmap($hBmp)
+	_GDIPlus_BitmapDispose($hBmp)
+	
+	$hDC = _WinAPI_GetDC($hGUI)
+	$hDC_Backbuffer = _WinAPI_CreateCompatibleDC($hDC)
+	$oDC_Obj = _WinAPI_SelectObject($hDC_Backbuffer, $hBitmap)
+	$hGfxCtx = _GDIPlus_GraphicsCreateFromHDC($hDC_Backbuffer)
+	_GDIPlus_GraphicsSetSmoothingMode($hGfxCtx, $GDIP_SMOOTHINGMODE_HIGHQUALITY)
+	_GDIPlus_GraphicsSetPixelOffsetMode($hGfxCtx, $GDIP_PIXELOFFSETMODE_HIGHQUALITY)
+	
+	Global $iRound = 0
+	
 	
 	$fUserSetup()
 EndFunc
@@ -181,11 +199,11 @@ Func _M_MainRender($step, $fUserRender)
 ;~ 		$hActiveBuffer = 1
 ;~ 	EndIf
 	
-	$hContext = $hBuffer
+;~ 	$hContext = $hBuffer
 	
-	_GDIPlus_GraphicsClear($hContext, 0xFFFFFFFF)
+	_GDIPlus_GraphicsClear($hGfxCtx, 0xFFFFFFFF)
 	
-	$fUserRender($hContext)
+	$fUserRender($hGfxCtx)
 	
 	if $DEBUG then
 ;~ 		_M_DebugRender()
@@ -193,8 +211,9 @@ Func _M_MainRender($step, $fUserRender)
 	EndIf
 	
 	
-	_GDIPlus_GraphicsDrawImageRect($hGraphic, $hBitmap , 0, 0, $iWidth , $iHeight )
-	
+;~ 	_GDIPlus_GraphicsDrawImageRect($hGfxCtx, $hBitmap , 0, 0, $iWidth , $iHeight )
+	If $iRound Then _WinAPI_BitBlt($hDC, 0, 0, $iWidth, $iHeight, $hDC_Backbuffer, 0, 0, $SRCCOPY) ;copy backbuffer to screen (GUI)
+	$iRound += 1
 	
 	
 EndFunc
