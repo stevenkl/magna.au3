@@ -64,19 +64,37 @@ Func GameLoop($FPS, $fSetup, $fUpdate, $fRender)
 	_M_MainSetup($fSetup)
 	
 	While 1
-		$now = _WinAPI_GetTickCount()
-		$dt = $now - $last
-		$last = $now
-		if $dt < 1000 then
-			$accumulator += $dt
-			while $accumulator >= $delta
-				_M_MainUpdate($step, $fUpdate)
-				$accumulator -= $delta
-			Wend
-			_M_MainRender($step, $fRender)
+		If Not $bPause Then
+			$now = _WinAPI_GetTickCount()
+			$dt = $now - $last
+			$last = $now
+			if $dt < 1000 then
+				$accumulator += $dt
+				while $accumulator >= $delta
+					_M_MainUpdate($step, $fUpdate)
+					$accumulator -= $delta
+				Wend
+				_M_MainRender($step, $fRender)
+			EndIf
+		
+		Else
+			Sleep(10)
 		EndIf
 
 	Wend
+	
+;~ 	Do
+;~ 		_M_MainUpdate($step, $fUpdate)
+;~ 		_M_MainRender($step, $fRender)
+;~ 	Until Not Sleep(1000/$FPS)
+	
+;~ 	While 1
+;~ 		If Not $bPause Then
+;~ 			_M_MainUpdate($step, $fUpdate)
+;~ 			_M_MainRender($step, $fRender)
+;~ 			Sleep(1000 / $FPS)
+;~ 		EndIf
+;~ 	Wend
 EndFunc
 #EndRegion Main GameLoop
 
@@ -124,11 +142,19 @@ EndFunc
 
 Func _M_FindEntitiesByType($sType)
 	local $arr = _Array()
-	for $entity in $g_MEntities
-		if $entity("type") = $sType Then
-			_ArrayAdd($arr, $entity)
+	
+;~ 	for $entity in $g_MEntities
+;~ 		if $entity("type") = $sType Then
+;~ 			_ArrayAdd($arr, $entity)
+;~ 		EndIf
+;~ 	Next
+	
+	For $i = 0 To UBound($g_MEntities) - 1
+		if ($g_MEntities[$i]).Item("type") = $sType Then
+			_ArrayAdd($arr, $g_MEntities[$i])
 		EndIf
 	Next
+	
 	return $arr
 EndFunc
 
