@@ -41,24 +41,24 @@ Func Setup()
     GUISetOnEvent($GUI_EVENT_RESTORE, "WindowEvent")
 	Global $bPause = False
 	
-;~ 	For $i = 1 To 25
-;~ 		; Creating objects
-;~ 		local $it = _Dict()
-;~ 		local $width = Random(20, 80, 1), $height = Random(20, 80, 1)
-;~ 		local $color = $aColors[Random(0, UBound($aColors) - 1, 1)]
-;~ 		$it.Add("name", StringFormat("rect_%d", $i))
-;~ 		$it.Add("type", "rectangle")
-;~ 		$it.Add("x", Random(20, $iWidth - $width, 1))
-;~ 		$it.Add("y", Random(20, $iHeight - $height, 1))
-;~ 		$it.Add("vx", Random(3, 10))
-;~ 		$it.Add("vy", Random(3, 10))
-;~ 		$it.Add("width", $width)
-;~ 		$it.Add("height", $height)
-;~ 		$it.Add("color", $color)
-;~ 		$it.Add("defaultcolor", $color)
-;~ 		$it.Add("active", true)
-;~ 		_M_AddEntity($it)
-;~ 	Next
+	For $i = 1 To 25
+		; Creating objects
+		local $it = _Dict()
+		local $width = Random(20, 80, 1), $height = Random(20, 80, 1)
+		local $color = $aColors[Random(0, UBound($aColors) - 1, 1)]
+		$it.Add("name", StringFormat("rect_%d", $i))
+		$it.Add("type", "rectangle")
+		$it.Add("x", Random(20, $iWidth - $width, 1))
+		$it.Add("y", Random(20, $iHeight - $height, 1))
+		$it.Add("vx", Random(3, 10))
+		$it.Add("vy", Random(3, 10))
+		$it.Add("width", $width)
+		$it.Add("height", $height)
+		$it.Add("color", $color)
+		$it.Add("defaultcolor", $color)
+		$it.Add("active", true)
+		_M_AddEntity($it)
+	Next
 	
 	For $i = 1 To 50
 		; Creating objects
@@ -100,8 +100,8 @@ Func Update($step)
 			EndIf
 			
 			; move
-			$item("x") = ($item("x") + $item("vx")) * $step
-			$item("y") = ($item("y") + $item("vy")) * $step
+			$item("x") = ($item("x") + $item("vx"))
+			$item("y") = ($item("y") + $item("vy"))
 		Next
 	EndIf
 	
@@ -110,32 +110,32 @@ EndFunc
 
 Func Render(ByRef $context)
 	
-	local $brush = _GDIPlus_BrushCreateSolid()
+;~ 	local $brush = _GDIPlus_BrushCreateSolid()
 	
 	
 	If Not $bPause Then
 		For $item in _M_FindEntitiesByType("cube")
-;~ 			local $brush = _GDIPlus_BrushCreateSolid()
+			local $brush = _GDIPlus_BrushCreateSolid()
 			_GDIPlus_BrushSetSolidColor($brush, $item("color"))
 			_GDIPlus_GraphicsFillRect($context, $item("x"), $item("y"), $item("width"), $item("height"), $brush)
-;~ 			_GDIPlus_BrushDispose($brush)
+			_GDIPlus_BrushDispose($brush)
 		Next
 		
 		For $item in _M_FindEntitiesByType("rectangle")
-;~ 			local $brush = _GDIPlus_BrushCreateSolid()
+			local $brush = _GDIPlus_BrushCreateSolid()
 			_GDIPlus_BrushSetSolidColor($brush, $item("color"))
 			_GDIPlus_GraphicsFillRect($context, $item("x"), $item("y"), $item("width"), $item("height"), $brush)
-;~ 			_GDIPlus_BrushDispose($brush)
+			_GDIPlus_BrushDispose($brush)
 		Next
 		
 		For $item in _M_FindEntitiesByType("sprite")
-;~ 			local $brush = _GDIPlus_BrushCreateSolid()
+			local $brush = _GDIPlus_BrushCreateSolid()
 			_GDIPlus_GraphicsDrawImage($context, $item("image"), $item("x"), $item("y"))
-;~ 			_GDIPlus_BrushDispose($brush)
+			_GDIPlus_BrushDispose($brush)
 		Next
 	EndIf
 	
-	_GDIPlus_BrushDispose($brush)
+;~ 	_GDIPlus_BrushDispose($brush)
 	
 EndFunc
 
@@ -148,7 +148,7 @@ Func Main()
 ;~ 	ConsoleWrite(StringFormat("Typeof $magna: %s", VarGetType($magna)) & @CRLF)
 ;~ 	ConsoleWrite(StringFormat("$magna.name = %s", $magna.name) & @CRLF)
 ;~ 	exit
-	GameLoop(60, Setup, Update, Render)
+	GameLoop(30.0, Setup, Update, Render)
 EndFunc
 #EndRegion Main Function
 

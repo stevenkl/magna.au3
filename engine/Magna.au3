@@ -63,31 +63,42 @@ Func GameLoop($FPS, $fSetup, $fUpdate, $fRender)
 	
 	_M_MainSetup($fSetup)
 	
-	While 1
-		If Not $bPause Then
-			$now = _WinAPI_GetTickCount()
-			$dt = $now - $last
-			$last = $now
-			if $dt < 1000 then
-				$accumulator += $dt
-				while $accumulator >= $delta
-					_M_MainUpdate($step, $fUpdate)
-					$accumulator -= $delta
-				Wend
-				_M_MainRender($step, $fRender)
-			EndIf
-		
-		Else
-			Sleep(10)
-		EndIf
-
-	Wend
 	
+	Local $dStart = 0
+	Do
+		$dStart = TimerInit()
+		_M_MainUpdate($step, $fUpdate)
+		_M_MainRender($step, $fRender)
+	Until Not Sleep( (1000.0 / $FPS) - TimerDiff($dStart))
+	
+	
+;~ 	While 1
+;~ 		If Not $bPause Then
+;~ 			$now = _WinAPI_GetTickCount()
+;~ 			$dt = $now - $last
+;~ 			$last = $now
+;~ 			if $dt < 1000 then
+;~ 				$accumulator += $dt
+;~ 				while $accumulator >= $delta
+;~ 					_M_MainUpdate($step, $fUpdate)
+;~ 					$accumulator -= $delta
+;~ 				Wend
+;~ 				_M_MainRender($step, $fRender)
+;~ 			EndIf
+;~ 		
+;~ 		Else
+;~ 			Sleep(10)
+;~ 		EndIf
+;~ 
+;~ 	Wend
+
+
 ;~ 	Do
 ;~ 		_M_MainUpdate($step, $fUpdate)
 ;~ 		_M_MainRender($step, $fRender)
 ;~ 	Until Not Sleep(1000/$FPS)
-	
+
+
 ;~ 	While 1
 ;~ 		If Not $bPause Then
 ;~ 			_M_MainUpdate($step, $fUpdate)
@@ -95,6 +106,8 @@ Func GameLoop($FPS, $fSetup, $fUpdate, $fRender)
 ;~ 			Sleep(1000 / $FPS)
 ;~ 		EndIf
 ;~ 	Wend
+
+
 EndFunc
 #EndRegion Main GameLoop
 
@@ -175,21 +188,12 @@ EndFunc
 
 #Region Main-Setup,Update,Render
 Func _M_MainSetup($fUserSetup)
-	AutoItSetOption("GUIOnEventMode", 1)
-	GUISetOnEvent($GUI_EVENT_CLOSE, "_Exit")
-	HotKeySet("{ESC}", ProcessInput)
 	
     ; Create GUI
     $hGUI = GUICreate($sTitle ? $sTitle : "", $iWidth , $iHeight )
     GUISetState(@SW_SHOW)
 
-    _GDIPlus_Startup()
-	
-;~     $hGraphic = _GDIPlus_GraphicsCreateFromHWND($hGUI)	
-;~ 	$hBitmap = _GDIPlus_BitmapCreateFromGraphics($iWidth, $iHeight, $hGraphic)
-;~ 	$hBuffer = _GDIPlus_ImageGetGraphicsContext($hBitmap)
-;~ 	$hContext = $hBuffer
-	
+    _GDIPlus_Startup()	
 	
 	; "C:\Program Files (x86)\AutoIt3\Examples\Helpfile\_WinAPI_BitBlt.au3"
 	Local $hBmp = _GDIPlus_BitmapCreateFromScan0($iWidth, $iHeight)
@@ -205,39 +209,25 @@ Func _M_MainSetup($fUserSetup)
 	
 	Global $iRound = 0
 	
-	
 	$fUserSetup()
 EndFunc
 
 
 Func _M_MainUpdate($step, $fUserUpdate)
-	
-	
 	$fUserUpdate($step)
 EndFunc
 
 
 Func _M_MainRender($step, $fUserRender)
-	
-;~ 	If $hActiveBuffer = 1 Then
-;~ 		$hActiveBuffer = 0
-;~ 	Else 
-;~ 		$hActiveBuffer = 1
-;~ 	EndIf
-	
-;~ 	$hContext = $hBuffer
-	
+		
 	_GDIPlus_GraphicsClear($hGfxCtx, 0xFFFFFFFF)
 	
 	$fUserRender($hGfxCtx)
 	
 	if $DEBUG then
-;~ 		_M_DebugRender()
-;~ 		WinSetTitle($hGUI, "", StringFormat("Current Buffer: %d", $hActiveBuffer))
+		_M_DebugRender($hGfxCtx)
 	EndIf
 	
-	
-;~ 	_GDIPlus_GraphicsDrawImageRect($hGfxCtx, $hBitmap , 0, 0, $iWidth , $iHeight )
 	If $iRound Then _WinAPI_BitBlt($hDC, 0, 0, $iWidth, $iHeight, $hDC_Backbuffer, 0, 0, $SRCCOPY) ;copy backbuffer to screen (GUI)
 	$iRound += 1
 	
@@ -247,15 +237,15 @@ EndFunc
 
 
 
-Func _M_DebugRender()
+Func _M_DebugRender(ByRef $ctx)
 	
 	local $pen = _GDIPlus_PenCreate(0x55000000, 1, 2)
 	
 	for $i = 0 to $iHeight Step $iRasterX
-		_GDIPlus_GraphicsDrawLine($hContext, 0, $i, $iWidth, $i, $pen)
+		_GDIPlus_GraphicsDrawLine($ctx, 0, $i, $iWidth, $i, $pen)
 	Next
 	for $i = 0 to $iWidth Step $iRasterY
-		_GDIPlus_GraphicsDrawLine($hContext, $i, 0, $i, $iHeight, $pen)
+		_GDIPlus_GraphicsDrawLine($ctx, $i, 0, $i, $iHeight, $pen)
 	Next
 EndFunc
 
